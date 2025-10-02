@@ -842,7 +842,7 @@ local function enable4KGraphics()
       end
       
       -- Appliquer les paramètres 4K WET/RAIN (effet mouillé brillant)
-      Lighting.Brightness = 1.0 -- Luminosité réduite
+      Lighting.Brightness = 0.5 -- Luminosité réduite
       Lighting.ColorShift_Bottom = Color3.fromRGB(40, 50, 70) -- Teinte bleutée (pluie)
       Lighting.ColorShift_Top = Color3.fromRGB(180, 200, 220) -- Ciel gris pluie
       Lighting.EnvironmentDiffuseScale = 0.4 -- Plus de diffusion pour brillance
