@@ -371,13 +371,6 @@ end)
 local MainTab = Window:CreateTab("Home", 4483362458) -- Title, Image
 local Section = MainTab:CreateSection("Main")
 
-Rayfield:Notify({
-   Title = "You executed the script !",
-   Content = "Thank's for using Essence",
-   Duration = 5,
-   Image = 4483362458,
-})
-
 local Button = MainTab:CreateButton({
    Name = "Infinite Jump",
    Callback = function()
