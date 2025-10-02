@@ -497,25 +497,6 @@ local Toggle = VisualTab:CreateToggle({
    end,
 })
 
-local Toggle = VisualTab:CreateToggle({
-   Name = "Red Outlines",
-   CurrentValue = false,
-   Flag = "toggleredoutlines",
-   Callback = function(Value)
-      pcall(function()
-         if type(ESP) == 'table' and ESP.Config then 
-            if Value then
-               ESP.Config.OutlineColor = Color3.fromRGB(255, 0, 0) -- Rouge
-               ESP.Config.Color = Color3.fromRGB(255, 0, 0) -- Rouge
-            else
-               ESP.Config.OutlineColor = Color3.fromRGB(0, 255, 255) -- Cyan par défaut
-               ESP.Config.Color = Color3.fromRGB(0, 255, 255) -- Cyan par défaut
-            end
-         end
-      end)
-   end,
-})
-
 local Slider = VisualTab:CreateSlider({
    Name = "ESP Opacity",
    Range = {0, 50},
@@ -2114,108 +2095,300 @@ do
    })
 end
 
+-- ===========================
+-- EMOTES TAB (R15 UGC EMOTES)
+-- ===========================
+local EmotesTab = Window:CreateTab("Emotes", 4483362458)
+
+-- Emotes validés avec IDs fonctionnels (format ID numérique)
+local EmoteAnimations = {
+   ["Touhou Chirumiru (Spin)"] = 87093097413514,
+   ["Backflip Animation"] = 131921180248141, -- Fake Death (Best)
+   ["Flat Sitting Pose"] = 114858110513023,
+   ["Take The L"] = 125578981255289,
+   ["Cute Sit"] = 131836270858895,
+   ["E-Girl (Kawaii Doll)"] = 139510904359228, -- kawaii doll sitting pose
+   ["Hide"] = 126193377347657,
+   ["Flying Bird"] = 126285359578816,
+   ["Charleston"] = 72556581432614,
+   ["Zero Two Dance"] = 133729878579101,
+   ["Griddy"] = 117535973356048,
+   ["Orange Justice"] = 95127716920692,
+   ["Default Dance"] = 101011728520473,
+   ["Kazotsky Kick"] = 119264600441310,
+}
+
+-- Variable pour tracker l'animation en cours
+local currentEmoteTrack = nil
+
+-- Fonction pour jouer une emote avec le format ID correct
+local function playEmote(emoteName, emoteId)
+   pcall(function()
+      local player = game:GetService("Players").LocalPlayer
+      local character = player.Character or player.CharacterAdded:Wait()
+      local humanoid = character:FindFirstChildOfClass("Humanoid")
+      
+      if not humanoid then 
+         game:GetService('StarterGui'):SetCore('SendNotification', {
+            Title = 'Emotes', 
+            Text = 'Humanoid introuvable !', 
+            Duration = 3
+         })
+         return 
+      end
+      
+      -- Arrêter l'animation précédente si elle existe
+      if currentEmoteTrack then
+         currentEmoteTrack:Stop()
+         currentEmoteTrack:Destroy()
+         currentEmoteTrack = nil
+      end
+      
+      -- Créer la nouvelle animation avec le format ID correct
+      local animator = humanoid:FindFirstChildOfClass("Animator")
+      if not animator then
+         animator = Instance.new("Animator")
+         animator.Parent = humanoid
+      end
+      
+      -- Charger l'animation avec rbxassetid:// + ID
+      local animation = Instance.new("Animation")
+      animation.AnimationId = "rbxassetid://" .. tostring(emoteId)
+      
+      currentEmoteTrack = animator:LoadAnimation(animation)
+      
+      -- Configurer les propriétés de l'animation
+      currentEmoteTrack.Priority = Enum.AnimationPriority.Action
+      currentEmoteTrack.Looped = true -- La plupart des emotes sont en boucle
+      
+      -- Jouer l'animation
+      currentEmoteTrack:Play()
+      
+      game:GetService('StarterGui'):SetCore('SendNotification', {
+         Title = 'Emotes', 
+         Text = emoteName .. ' activé !', 
+         Duration = 2
+      })
+      
+      -- Nettoyer l'animation après la fin
+      currentEmoteTrack.Stopped:Connect(function()
+         if animation then animation:Destroy() end
+      end)
+   end)
+end
+
+-- Fonction pour arrêter l'emote en cours
+local function stopEmote()
+   pcall(function()
+      if currentEmoteTrack then
+         currentEmoteTrack:Stop()
+         currentEmoteTrack:Destroy()
+         currentEmoteTrack = nil
+         
+         game:GetService('StarterGui'):SetCore('SendNotification', {
+            Title = 'Emotes', 
+            Text = 'Emote arrêté', 
+            Duration = 2
+         })
+      end
+   end)
+end
+
+-- Section: Emotes demandés
+local Section = EmotesTab:CreateSection("Vos Emotes")
+
+-- Boutons pour les 6 emotes principaux demandés
+EmotesTab:CreateButton({
+   Name = "🎵 Touhou Chirumiru (Spin)",
+   Callback = function()
+      playEmote("Touhou Chirumiru", 87093097413514)
+   end,
+})
+
+EmotesTab:CreateButton({
+   Name = "🤸 Backflip Animation",
+   Callback = function()
+      playEmote("Backflip Animation", 131921180248141)
+   end,
+})
+
+EmotesTab:CreateButton({
+   Name = "💺 Flat Sitting Pose",
+   Callback = function()
+      playEmote("Flat Sitting Pose", 114858110513023)
+   end,
+})
+
+EmotesTab:CreateButton({
+   Name = "🅱️ Take The L",
+   Callback = function()
+      playEmote("Take The L", 125578981255289)
+   end,
+})
+
+EmotesTab:CreateButton({
+   Name = "😊 Cute Sit",
+   Callback = function()
+      playEmote("Cute Sit", 131836270858895)
+   end,
+})
+
+EmotesTab:CreateButton({
+   Name = "👧 E-Girl (Kawaii Doll)",
+   Callback = function()
+      playEmote("E-Girl", 139510904359228)
+   end,
+})
+
+-- Section: Emotes populaires
+local Section2 = EmotesTab:CreateSection("Emotes Populaires")
+
+EmotesTab:CreateButton({
+   Name = "💃 Griddy",
+   Callback = function()
+      playEmote("Griddy", 117535973356048)
+   end,
+})
+
+EmotesTab:CreateButton({
+   Name = "🍊 Orange Justice",
+   Callback = function()
+      playEmote("Orange Justice", 95127716920692)
+   end,
+})
+
+EmotesTab:CreateButton({
+   Name = "🕺 Default Dance",
+   Callback = function()
+      playEmote("Default Dance", 101011728520473)
+   end,
+})
+
+EmotesTab:CreateButton({
+   Name = "⚡ Zero Two Dance",
+   Callback = function()
+      playEmote("Zero Two Dance", 133729878579101)
+   end,
+})
+
+EmotesTab:CreateButton({
+   Name = "🎩 Charleston",
+   Callback = function()
+      playEmote("Charleston", 72556581432614)
+   end,
+})
+
+EmotesTab:CreateButton({
+   Name = "🤝 Kazotsky Kick",
+   Callback = function()
+      playEmote("Kazotsky Kick", 119264600441310)
+   end,
+})
+
+-- Section: Contrôles
+local Section3 = EmotesTab:CreateSection("Contrôles")
+
+EmotesTab:CreateButton({
+   Name = "⏹️ Stop Emote",
+   Callback = function()
+      stopEmote()
+   end,
+})
+
+-- Section: Informations
+local Section4 = EmotesTab:CreateSection("Info")
+
+EmotesTab:CreateButton({
+   Name = "ℹ️ Instructions",
+   Callback = function()
+      game:GetService('StarterGui'):SetCore('SendNotification', {
+         Title = 'Emotes Info', 
+         Text = 'IDs validés depuis le script R15 UGC. Clique pour jouer, Stop pour arrêter.', 
+         Duration = 5
+      })
+   end,
+})
+
 -- Charger la configuration sauvegardée
 Rayfield:LoadConfiguration()
 
 -- ===========================
--- AUTOLOAD SYSTEM
+-- AUTOLOAD SYSTEM (FONCTIONNEL)
 -- ===========================
--- Relance automatiquement le script lors du changement de serveur/respawn
+-- Relance automatiquement le script lors du changement de serveur
 
+local TeleportService = game:GetService("TeleportService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
--- Fonction pour sauvegarder l'état actuel du script
-local function saveScriptState()
-   pcall(function()
-      if writefile then
-         local scriptState = {
-            lastExecuted = tick(),
-            autoloadEnabled = true,
-            scriptUrl = "https://raw.githubusercontent.com/CacaBoudinaaa/Rayfield/refs/heads/main/source.lua"
-         }
-         writefile("EssenceAutoload.json", game:GetService("HttpService"):JSONEncode(scriptState))
-      end
-   end)
-end
+-- URL du script à recharger
+local SCRIPT_URL = "https://raw.githubusercontent.com/CacaBoudinaaa/Rayfield/refs/heads/main/source.lua"
 
--- Fonction pour vérifier si l'autoload doit être exécuté
-local function shouldAutoload()
-   if readfile and isfile and isfile("EssenceAutoload.json") then
-      local success, data = pcall(function()
-         return game:GetService("HttpService"):JSONDecode(readfile("EssenceAutoload.json"))
-      end)
-      if success and data and data.autoloadEnabled then
-         -- Vérifie que le dernier chargement n'était pas trop récent (évite les boucles)
-         if tick() - (data.lastExecuted or 0) > 5 then
-            return true
-         end
-      end
-   end
-   return false
-end
-
--- Détection du changement de serveur / téléportation
-LocalPlayer.OnTeleport:Connect(function(State)
-   if State == Enum.TeleportState.Started then
-      game:GetService('StarterGui'):SetCore('SendNotification', {
-         Title = 'Essence Autoload', 
-         Text = 'Téléportation détectée - Préparation du rechargement...', 
-         Duration = 3
-      })
+-- Détection du changement de serveur
+if queue_on_teleport then
+   -- Code injecté qui sera exécuté dans le nouveau serveur
+   local autoloadCode = string.format([[
+      -- Autoload Essence après téléportation
+      task.wait(4) -- Attendre que le nouveau serveur soit complètement chargé
       
-      -- Sauvegarder l'état pour le prochain serveur
-      saveScriptState()
-      
-      -- Code pour réexécuter le script après téléportation
-      queue_on_teleport([[
-         task.wait(2) -- Délai de 2 secondes pour laisser le serveur charger
+      pcall(function()
+         local success, result = pcall(function()
+            return game:HttpGet('%s')
+         end)
          
-         local success, err = pcall(function()
-            -- Réexécute le script Essence depuis GitHub
-            loadstring(game:HttpGet('https://raw.githubusercontent.com/CacaBoudinaaa/Rayfield/refs/heads/main/source.lua'))()
+         if success and result then
+            local loadSuccess, loadError = pcall(function()
+               loadstring(result)()
+            end)
             
+            if loadSuccess then
+               task.wait(0.5)
+               game:GetService('StarterGui'):SetCore('SendNotification', {
+                  Title = 'Essence Autoload', 
+                  Text = '✓ Script rechargé avec succès !', 
+                  Duration = 4
+               })
+            else
+               warn("[Essence Autoload] Erreur de chargement:", loadError)
+            end
+         else
+            warn("[Essence Autoload] Erreur HTTP:", result)
+         end
+      end)
+   ]], SCRIPT_URL)
+   
+   -- Enregistrer le code d'autoload
+   queue_on_teleport(autoloadCode)
+   
+   -- Réenregistrer l'autoload à chaque téléportation
+   LocalPlayer.OnTeleport:Connect(function(State)
+      if State == Enum.TeleportState.Started then
+         -- Notifier l'utilisateur
+         pcall(function()
             game:GetService('StarterGui'):SetCore('SendNotification', {
                Title = 'Essence Autoload', 
-               Text = 'Script rechargé automatiquement !', 
-               Duration = 4
+               Text = '🔄 Changement de serveur détecté...', 
+               Duration = 3
             })
          end)
          
-         if not success then
-            game:GetService('StarterGui'):SetCore('SendNotification', {
-               Title = 'Essence Autoload', 
-               Text = 'Erreur de rechargement: ' .. tostring(err), 
-               Duration = 5
-            })
-         end
-      ]])
-   end
-end)
-
--- Détection du respawn du personnage
-LocalPlayer.CharacterAdded:Connect(function(character)
-   task.wait(1.5) -- Délai pour laisser le personnage charger complètement
-   
-   pcall(function()
-      -- Vérifier si c'est un nouveau serveur ou juste un respawn
-      if shouldAutoload() then
-         game:GetService('StarterGui'):SetCore('SendNotification', {
-            Title = 'Essence Autoload', 
-            Text = 'Nouveau serveur détecté - Script rechargé !', 
-            Duration = 3
-         })
-         
-         saveScriptState() -- Met à jour le timestamp
+         -- Réinjecter le code d'autoload pour le prochain serveur
+         queue_on_teleport(autoloadCode)
       end
    end)
-end)
-
--- Sauvegarder l'état initial à l'exécution
-saveScriptState()
-
-game:GetService('StarterGui'):SetCore('SendNotification', {
-   Title = 'Essence Autoload', 
-   Text = 'Système d\'autoload activé ✓', 
-   Duration = 3
-})
+   
+   -- Notification de confirmation
+   game:GetService('StarterGui'):SetCore('SendNotification', {
+      Title = 'Essence Autoload', 
+      Text = '✓ Autoload activé (changement de serveur)', 
+      Duration = 3
+   })
+else
+   -- L'exécuteur ne supporte pas queue_on_teleport
+   warn("[Essence] Votre exécuteur ne supporte pas queue_on_teleport - Autoload désactivé")
+   game:GetService('StarterGui'):SetCore('SendNotification', {
+      Title = 'Essence Autoload', 
+      Text = '⚠️ Autoload non disponible sur cet exécuteur', 
+      Duration = 4
+   })
+end
