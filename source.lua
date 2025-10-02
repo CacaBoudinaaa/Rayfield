@@ -1514,7 +1514,7 @@ local function createESPForPlayer(plr)
             if billboard then billboard:Destroy() end
          end)
          if ESP._instances[plr] then ESP._instances[plr] = nil end
-         conn:Disconnect()
+         if conn then conn:Disconnect() end
          return
       end
 
