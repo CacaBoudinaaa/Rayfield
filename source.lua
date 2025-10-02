@@ -621,10 +621,10 @@ local Toggle = VisualTab:CreateToggle({
       shadersEnabled = Value
       if Value then
          enableShaders()
-         game:GetService('StarterGui'):SetCore('SendNotification', {Title='Rivals', Text='Shaders activés', Duration=3})
+         -- game:GetService('StarterGui'):SetCore('SendNotification', {Title='Rivals', Text='Shaders activés', Duration=3})
       else
          disableShaders()
-         game:GetService('StarterGui'):SetCore('SendNotification', {Title='Rivals', Text='Shaders désactivés', Duration=3})
+         -- game:GetService('StarterGui'):SetCore('SendNotification', {Title='Rivals', Text='Shaders désactivés', Duration=3})
       end
    end,
 })
@@ -697,18 +697,18 @@ local Toggle = VisualTab:CreateToggle({
       customSkyEnabled = Value
       if Value then
          enableCustomSky()
-         game:GetService('StarterGui'):SetCore('SendNotification', {
-            Title = 'Rivals', 
-            Text = 'Skybox personnalisé activé', 
-            Duration = 3
-         })
+         -- game:GetService('StarterGui'):SetCore('SendNotification', {
+         --    Title = 'Rivals', 
+         --    Text = 'Skybox personnalisé activé', 
+         --    Duration = 3
+         -- })
       else
          disableCustomSky()
-         game:GetService('StarterGui'):SetCore('SendNotification', {
-            Title = 'Rivals', 
-            Text = 'Skybox original restauré', 
-            Duration = 3
-         })
+         -- game:GetService('StarterGui'):SetCore('SendNotification', {
+         --    Title = 'Rivals', 
+         --    Text = 'Skybox original restauré', 
+         --    Duration = 3
+         -- })
       end
    end,
 })
@@ -720,17 +720,17 @@ local Button = VisualTab:CreateButton({
          disableCustomSky()
          task.wait(0.1)
          enableCustomSky()
-         game:GetService('StarterGui'):SetCore('SendNotification', {
-            Title = 'Rivals', 
-            Text = 'Skybox réappliqué', 
-            Duration = 2
-         })
+         -- game:GetService('StarterGui'):SetCore('SendNotification', {
+         --    Title = 'Rivals', 
+         --    Text = 'Skybox réappliqué', 
+         --    Duration = 2
+         -- })
       else
-         game:GetService('StarterGui'):SetCore('SendNotification', {
-            Title = 'Rivals', 
-            Text = 'Activez d\'abord le skybox personnalisé', 
-            Duration = 2
-         })
+         -- game:GetService('StarterGui'):SetCore('SendNotification', {
+         --    Title = 'Rivals', 
+         --    Text = 'Activez d\'abord le skybox personnalisé', 
+         --    Duration = 2
+         -- })
       end
    end,
 })
@@ -746,11 +746,11 @@ local Toggle = VisualTab:CreateToggle({
             game:GetService("StarterPlayer").StarterPlayerScripts.UserInterface.FlashbangGui:Destroy()
             game:GetService("Players").LocalPlayer.PlayerScripts.UserInterface.FlashbangGui:Destroy()
          end)
-         game:GetService('StarterGui'):SetCore('SendNotification', {
-            Title = 'Rivals', 
-            Text = 'Flashbang effect removed (rejoin to restore)', 
-            Duration = 3
-         })
+         -- game:GetService('StarterGui'):SetCore('SendNotification', {
+         --    Title = 'Rivals', 
+         --    Text = 'Flashbang effect removed (rejoin to restore)', 
+         --    Duration = 3
+         -- })
       end
    end,
 })
@@ -779,17 +779,17 @@ local Toggle = VisualTab:CreateToggle({
    Callback = function(Value)
       smokeRemovalEnabled = Value
       if Value then
-         game:GetService('StarterGui'):SetCore('SendNotification', {
-            Title = 'Rivals', 
-            Text = 'Smoke removal activé', 
-            Duration = 3
-         })
+         -- game:GetService('StarterGui'):SetCore('SendNotification', {
+         --    Title = 'Rivals', 
+         --    Text = 'Smoke removal activé', 
+         --    Duration = 3
+         -- })
       else
-         game:GetService('StarterGui'):SetCore('SendNotification', {
-            Title = 'Rivals', 
-            Text = 'Smoke removal désactivé', 
-            Duration = 3
-         })
+         -- game:GetService('StarterGui'):SetCore('SendNotification', {
+         --    Title = 'Rivals', 
+         --    Text = 'Smoke removal désactivé', 
+         --    Duration = 3
+         -- })
       end
    end,
 })
@@ -849,14 +849,14 @@ local function enable4KGraphics()
       end
       
       -- Appliquer les paramètres 4K WET/RAIN (effet mouillé brillant)
-      Lighting.Brightness = 3.2 -- Plus brillant pour l'effet mouillé
+      Lighting.Brightness = 2.0 -- Luminosité réduite
       Lighting.ColorShift_Bottom = Color3.fromRGB(40, 50, 70) -- Teinte bleutée (pluie)
       Lighting.ColorShift_Top = Color3.fromRGB(180, 200, 220) -- Ciel gris pluie
       Lighting.EnvironmentDiffuseScale = 0.4 -- Plus de diffusion pour brillance
       Lighting.EnvironmentSpecularScale = 0.85 -- TRÈS IMPORTANT pour les reflets mouillés
       Lighting.OutdoorAmbient = Color3.fromRGB(110, 125, 145) -- Ambiance pluie
       Lighting.ShadowSoftness = 0.4 -- Ombres douces (nuages)
-      Lighting.ExposureCompensation = 0.35 -- Plus lumineux
+      Lighting.ExposureCompensation = 0.15 -- Exposition réduite
       Lighting.Ambient = Color3.fromRGB(90, 100, 120) -- Ambiance bleutée
       Lighting.GlobalShadows = true -- Ombres activées
       Lighting.ClockTime = 15.5 -- Temps nuageux
@@ -1019,18 +1019,18 @@ local function enable4KGraphics()
             end
          end)
          
-         game:GetService('StarterGui'):SetCore('SendNotification', {
-            Title = 'Rivals', 
-            Text = count .. ' surfaces rendues mouillées/brillantes', 
-            Duration = 3
-         })
+         -- game:GetService('StarterGui'):SetCore('SendNotification', {
+         --    Title = 'Rivals', 
+         --    Text = count .. ' surfaces rendues mouillées/brillantes', 
+         --    Duration = 3
+         -- })
       end)
       
-      game:GetService('StarterGui'):SetCore('SendNotification', {
-         Title = 'Rivals', 
-         Text = '4K Wet/Rain Graphics activé - Traitement en cours...', 
-         Duration = 3
-      })
+      -- game:GetService('StarterGui'):SetCore('SendNotification', {
+      --    Title = 'Rivals', 
+      --    Text = '4K Wet/Rain Graphics activé - Traitement en cours...', 
+      --    Duration = 3
+      -- })
    end)
 end
 
@@ -1144,11 +1144,11 @@ local function disable4KGraphics()
       end
       graphics4KEffects = {}
       
-      game:GetService('StarterGui'):SetCore('SendNotification', {
-         Title = 'Rivals', 
-         Text = '4K Wet/Rain Graphics désactivé', 
-         Duration = 3
-      })
+      -- game:GetService('StarterGui'):SetCore('SendNotification', {
+      --    Title = 'Rivals', 
+      --    Text = '4K Wet/Rain Graphics désactivé', 
+      --    Duration = 3
+      -- })
    end)
 end
 
@@ -1208,17 +1208,17 @@ local Toggle = SilentTab:CreateToggle({
             ExunysDeveloperAimbot.Settings.Enabled = Value
             
             if Value then
-               game:GetService('StarterGui'):SetCore('SendNotification', {
-                  Title = 'Rivals', 
-                  Text = 'Aimbot activé - Clic droit pour viser', 
-                  Duration = 3
-               })
+               -- game:GetService('StarterGui'):SetCore('SendNotification', {
+               --    Title = 'Rivals', 
+               --    Text = 'Aimbot activé - Clic droit pour viser', 
+               --    Duration = 3
+               -- })
             else
-               game:GetService('StarterGui'):SetCore('SendNotification', {
-                  Title = 'Rivals', 
-                  Text = 'Aimbot désactivé', 
-                  Duration = 3
-               })
+               -- game:GetService('StarterGui'):SetCore('SendNotification', {
+               --    Title = 'Rivals', 
+               --    Text = 'Aimbot désactivé', 
+               --    Duration = 3
+               -- })
             end
          end
       end)
@@ -1889,10 +1889,10 @@ do
                   end)
                end
             end)
-            game:GetService('StarterGui'):SetCore('SendNotification', {Title='Rivals', Text='TP Behind enabled (P)', Duration=3})
+            -- game:GetService('StarterGui'):SetCore('SendNotification', {Title='Rivals', Text='TP Behind enabled (P)', Duration=3})
          else
             if teleConn then teleConn:Disconnect(); teleConn = nil end
-            game:GetService('StarterGui'):SetCore('SendNotification', {Title='Rivals', Text='TP Behind disabled', Duration=3})
+            -- game:GetService('StarterGui'):SetCore('SendNotification', {Title='Rivals', Text='TP Behind disabled', Duration=3})
          end
       end,
    })
@@ -1960,10 +1960,10 @@ do
                   followTargetBehind()
                end
             end)
-            game:GetService('StarterGui'):SetCore('SendNotification', {Title='Rivals', Text='Follow Behind activated', Duration=3})
+            -- game:GetService('StarterGui'):SetCore('SendNotification', {Title='Rivals', Text='Follow Behind activated', Duration=3})
          else
             if followConn then followConn:Disconnect(); followConn = nil end
-            game:GetService('StarterGui'):SetCore('SendNotification', {Title='Rivals', Text='Follow Behind disabled', Duration=3})
+            -- game:GetService('StarterGui'):SetCore('SendNotification', {Title='Rivals', Text='Follow Behind disabled', Duration=3})
          end
       end,
    })
@@ -2070,14 +2070,14 @@ do
          flyEnabled = val
          if val then
             startFly()
-            game:GetService('StarterGui'):SetCore('SendNotification', {
-               Title='Rivals', 
-               Text='Fly activé - ZQSD pour bouger, Space/Ctrl pour monter/descendre', 
-               Duration=4
-            })
+            -- game:GetService('StarterGui'):SetCore('SendNotification', {
+            --    Title='Rivals', 
+            --    Text='Fly activé - ZQSD pour bouger, Space/Ctrl pour monter/descendre', 
+            --    Duration=4
+            -- })
          else
             stopFly()
-            game:GetService('StarterGui'):SetCore('SendNotification', {Title='Rivals', Text='Fly désactivé', Duration=3})
+            -- game:GetService('StarterGui'):SetCore('SendNotification', {Title='Rivals', Text='Fly désactivé', Duration=3})
          end
       end,
    })
@@ -2129,11 +2129,11 @@ local function playEmote(emoteName, emoteId)
       local humanoid = character:FindFirstChildOfClass("Humanoid")
       
       if not humanoid then 
-         game:GetService('StarterGui'):SetCore('SendNotification', {
-            Title = 'Emotes', 
-            Text = 'Humanoid introuvable !', 
-            Duration = 3
-         })
+         -- game:GetService('StarterGui'):SetCore('SendNotification', {
+         --    Title = 'Emotes', 
+         --    Text = 'Humanoid introuvable !', 
+         --    Duration = 3
+         -- })
          return 
       end
       
@@ -2164,11 +2164,11 @@ local function playEmote(emoteName, emoteId)
       -- Jouer l'animation
       currentEmoteTrack:Play()
       
-      game:GetService('StarterGui'):SetCore('SendNotification', {
-         Title = 'Emotes', 
-         Text = emoteName .. ' activé !', 
-         Duration = 2
-      })
+      -- game:GetService('StarterGui'):SetCore('SendNotification', {
+      --    Title = 'Emotes', 
+      --    Text = emoteName .. ' activé !', 
+      --    Duration = 2
+      -- })
       
       -- Nettoyer l'animation après la fin
       currentEmoteTrack.Stopped:Connect(function()
@@ -2185,11 +2185,11 @@ local function stopEmote()
          currentEmoteTrack:Destroy()
          currentEmoteTrack = nil
          
-         game:GetService('StarterGui'):SetCore('SendNotification', {
-            Title = 'Emotes', 
-            Text = 'Emote arrêté', 
-            Duration = 2
-         })
+         -- game:GetService('StarterGui'):SetCore('SendNotification', {
+         --    Title = 'Emotes', 
+         --    Text = 'Emote arrêté', 
+         --    Duration = 2
+         -- })
       end
    end)
 end
@@ -2301,11 +2301,11 @@ local Section4 = EmotesTab:CreateSection("Info")
 EmotesTab:CreateButton({
    Name = "ℹ️ Instructions",
    Callback = function()
-      game:GetService('StarterGui'):SetCore('SendNotification', {
-         Title = 'Emotes Info', 
-         Text = 'IDs validés depuis le script R15 UGC. Clique pour jouer, Stop pour arrêter.', 
-         Duration = 5
-      })
+      -- game:GetService('StarterGui'):SetCore('SendNotification', {
+      --    Title = 'Emotes Info', 
+      --    Text = 'IDs validés depuis le script R15 UGC. Clique pour jouer, Stop pour arrêter.', 
+      --    Duration = 5
+      -- })
    end,
 })
 
@@ -2343,11 +2343,11 @@ if queue_on_teleport then
             
             if loadSuccess then
                task.wait(0.5)
-               game:GetService('StarterGui'):SetCore('SendNotification', {
-                  Title = 'Essence Autoload', 
-                  Text = '✓ Script rechargé avec succès !', 
-                  Duration = 4
-               })
+               -- game:GetService('StarterGui'):SetCore('SendNotification', {
+               --    Title = 'Essence Autoload', 
+               --    Text = '✓ Script rechargé avec succès !', 
+               --    Duration = 4
+               -- })
             else
                warn("[Essence Autoload] Erreur de chargement:", loadError)
             end
@@ -2365,11 +2365,11 @@ if queue_on_teleport then
       if State == Enum.TeleportState.Started then
          -- Notifier l'utilisateur
          pcall(function()
-            game:GetService('StarterGui'):SetCore('SendNotification', {
-               Title = 'Essence Autoload', 
-               Text = '🔄 Changement de serveur détecté...', 
-               Duration = 3
-            })
+            -- game:GetService('StarterGui'):SetCore('SendNotification', {
+            --    Title = 'Essence Autoload', 
+            --    Text = '🔄 Changement de serveur détecté...', 
+            --    Duration = 3
+            -- })
          end)
          
          -- Réinjecter le code d'autoload pour le prochain serveur
@@ -2378,17 +2378,17 @@ if queue_on_teleport then
    end)
    
    -- Notification de confirmation
-   game:GetService('StarterGui'):SetCore('SendNotification', {
-      Title = 'Essence Autoload', 
-      Text = '✓ Autoload activé (changement de serveur)', 
-      Duration = 3
-   })
+   -- game:GetService('StarterGui'):SetCore('SendNotification', {
+   --    Title = 'Essence Autoload', 
+   --    Text = '✓ Autoload activé (changement de serveur)', 
+   --    Duration = 3
+   -- })
 else
    -- L'exécuteur ne supporte pas queue_on_teleport
    warn("[Essence] Votre exécuteur ne supporte pas queue_on_teleport - Autoload désactivé")
-   game:GetService('StarterGui'):SetCore('SendNotification', {
-      Title = 'Essence Autoload', 
-      Text = '⚠️ Autoload non disponible sur cet exécuteur', 
-      Duration = 4
-   })
+   -- game:GetService('StarterGui'):SetCore('SendNotification', {
+   --    Title = 'Essence Autoload', 
+   --    Text = '⚠️ Autoload non disponible sur cet exécuteur', 
+   --    Duration = 4
+   -- })
 end
