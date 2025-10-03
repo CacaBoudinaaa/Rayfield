@@ -236,8 +236,8 @@ local function initializeAimbot()
    --// Main Loop
    local function Load()
    	ServiceConnections.RenderSteppedConnection = RunService.RenderStepped:Connect(function()
-   		-- FOV Circle Update
-   		if Environment.FOVSettings.Enabled and Environment.Settings.Enabled then
+   		-- FOV Circle Update (show FOV even when aimbot is disabled)
+   		if Environment.FOVSettings.Enabled then
    			FOVCircle.Radius = Environment.FOVSettings.Amount
    			FOVCircle.Thickness = Environment.FOVSettings.Thickness
    			FOVCircle.Filled = Environment.FOVSettings.Filled
@@ -1235,6 +1235,9 @@ local Toggle = SilentTab:CreateToggle({
    Flag = "togglewallcheck",
    Callback = function(Value)
       pcall(function()
+         if not ExunysDeveloperAimbot then
+            ExunysDeveloperAimbot = initializeAimbot()
+         end
          if ExunysDeveloperAimbot and ExunysDeveloperAimbot.Settings then
             ExunysDeveloperAimbot.Settings.WallCheck = Value
          end
@@ -1248,6 +1251,11 @@ local Toggle = SilentTab:CreateToggle({
    Flag = "toggleaimbotfov",
    Callback = function(Value)
       pcall(function()
+         -- Ensure aimbot is initialized
+         if not ExunysDeveloperAimbot then
+            ExunysDeveloperAimbot = initializeAimbot()
+         end
+         
          if ExunysDeveloperAimbot and ExunysDeveloperAimbot.FOVSettings then
             ExunysDeveloperAimbot.FOVSettings.Enabled = Value
             ExunysDeveloperAimbot.FOVSettings.Visible = Value
@@ -1265,6 +1273,11 @@ local Slider = SilentTab:CreateSlider({
    Flag = "aimbotfovsize",
    Callback = function(Value)
       pcall(function()
+         -- Ensure aimbot is initialized
+         if not ExunysDeveloperAimbot then
+            ExunysDeveloperAimbot = initializeAimbot()
+         end
+         
          if ExunysDeveloperAimbot and ExunysDeveloperAimbot.FOVSettings then
             ExunysDeveloperAimbot.FOVSettings.Amount = Value
          end
@@ -1281,6 +1294,9 @@ local Slider = SilentTab:CreateSlider({
    Flag = "aimbotsmooth",
    Callback = function(Value)
       pcall(function()
+         if not ExunysDeveloperAimbot then
+            ExunysDeveloperAimbot = initializeAimbot()
+         end
          if ExunysDeveloperAimbot and ExunysDeveloperAimbot.Settings then
             ExunysDeveloperAimbot.Settings.Sensitivity = Value
          end
@@ -1297,6 +1313,9 @@ local Slider = SilentTab:CreateSlider({
    Flag = "stickyradius",
    Callback = function(Value)
       pcall(function()
+         if not ExunysDeveloperAimbot then
+            ExunysDeveloperAimbot = initializeAimbot()
+         end
          if ExunysDeveloperAimbot and ExunysDeveloperAimbot.Settings then
             ExunysDeveloperAimbot.Settings.StickyRadius = Value
          end
@@ -1313,6 +1332,9 @@ local Slider = SilentTab:CreateSlider({
    Flag = "stickytime",
    Callback = function(Value)
       pcall(function()
+         if not ExunysDeveloperAimbot then
+            ExunysDeveloperAimbot = initializeAimbot()
+         end
          if ExunysDeveloperAimbot and ExunysDeveloperAimbot.Settings then
             ExunysDeveloperAimbot.Settings.StickyTime = Value
          end
@@ -1328,6 +1350,9 @@ local Dropdown = SilentTab:CreateDropdown({
    Flag = "aimbottarget",
    Callback = function(Options)
       pcall(function()
+         if not ExunysDeveloperAimbot then
+            ExunysDeveloperAimbot = initializeAimbot()
+         end
          if ExunysDeveloperAimbot and ExunysDeveloperAimbot.Settings then
             if type(Options) == 'table' then
                ExunysDeveloperAimbot.Settings.LockPart = Options[1]
@@ -1405,38 +1430,43 @@ end
 
 -- Restore configuration from saved Rayfield flags after UI loads
 spawn(function()
-   wait(0.3) -- Wait for Rayfield to load configuration
+   wait(0.5) -- Wait longer for Rayfield to fully load configuration
    pcall(function()
-      -- Get saved values from Rayfield flags if they exist
-      local SavedFlags = Rayfield.Flags or {}
+      -- Ensure ExunysDeveloperAimbot exists
+      if not ExunysDeveloperAimbot then
+         ExunysDeveloperAimbot = initializeAimbot()
+      end
       
-      -- Restore Aimbot FOV settings from saved flags
+      -- Restore Aimbot FOV settings from Rayfield
+      -- Note: Rayfield.Flags stores the actual values, not wrapped objects
       if ExunysDeveloperAimbot and ExunysDeveloperAimbot.FOVSettings then
-         if SavedFlags["toggleaimbotfov"] ~= nil then
-            local showFov = SavedFlags["toggleaimbotfov"].CurrentValue or false
+         -- The callbacks will have already been called by Rayfield's LoadConfiguration
+         -- But we ensure values are synchronized here as a safety measure
+         
+         -- Check if we have saved flag values
+         if Rayfield.Flags and Rayfield.Flags["aimbotfovsize"] then
+            ExunysDeveloperAimbot.FOVSettings.Amount = Rayfield.Flags["aimbotfovsize"]
+         end
+         
+         if Rayfield.Flags and Rayfield.Flags["toggleaimbotfov"] ~= nil then
+            local showFov = Rayfield.Flags["toggleaimbotfov"]
             ExunysDeveloperAimbot.FOVSettings.Enabled = showFov
             ExunysDeveloperAimbot.FOVSettings.Visible = showFov
          end
-         
-         if SavedFlags["aimbotfovsize"] ~= nil then
-            local fovSize = SavedFlags["aimbotfovsize"].CurrentValue or 90
-            ExunysDeveloperAimbot.FOVSettings.Amount = fovSize
-         end
       end
       
-      -- Restore SilentAim FOV settings from saved flags
+      -- Restore SilentAim FOV settings
       if type(SilentAim) == 'table' then
-         if SavedFlags["togglesfovsilent"] ~= nil then
-            SilentAim.ShowFOV = SavedFlags["togglesfovsilent"].CurrentValue or false
+         if Rayfield.Flags and Rayfield.Flags["slidefovsilent"] then
+            SilentAim.FOVRadius = math.max(Rayfield.Flags["slidefovsilent"], 25)
          end
          
-         if SavedFlags["slidefovsilent"] ~= nil then
-            local fovRadius = SavedFlags["slidefovsilent"].CurrentValue or 50
-            SilentAim.FOVRadius = math.max(fovRadius, 25) -- Enforce minimum
+         if Rayfield.Flags and Rayfield.Flags["togglesfovsilent"] ~= nil then
+            SilentAim.ShowFOV = Rayfield.Flags["togglesfovsilent"]
          end
          
-         if SavedFlags["slidefovyoffset"] ~= nil then
-            SilentAim.FOVYOffset = SavedFlags["slidefovyoffset"].CurrentValue or 0
+         if Rayfield.Flags and Rayfield.Flags["slidefovyoffset"] then
+            SilentAim.FOVYOffset = Rayfield.Flags["slidefovyoffset"]
          end
       end
       
