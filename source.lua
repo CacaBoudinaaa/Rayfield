@@ -1190,11 +1190,7 @@ local Toggle = SilentTab:CreateToggle({
       if type(SilentAim) == 'table' then 
          SilentAim.ShowFOV = Value 
       end
-      -- Update Aimbot FOV visibility
-      if ExunysDeveloperAimbot and ExunysDeveloperAimbot.FOVSettings then
-         ExunysDeveloperAimbot.FOVSettings.Enabled = Value
-         ExunysDeveloperAimbot.FOVSettings.Visible = Value
-      end
+      -- Note: This is for SilentAim FOV only, Aimbot FOV is controlled by "Show Aimbot FOV" toggle
    end)
    end,
 })
@@ -1253,6 +1249,7 @@ local Toggle = SilentTab:CreateToggle({
    Callback = function(Value)
       pcall(function()
          if ExunysDeveloperAimbot and ExunysDeveloperAimbot.FOVSettings then
+            ExunysDeveloperAimbot.FOVSettings.Enabled = Value
             ExunysDeveloperAimbot.FOVSettings.Visible = Value
          end
       end)
@@ -1406,16 +1403,44 @@ do
    -- persistence disabled: no Rayfield flag restoration
 end
 
--- Ensure SilentAim defaults persist after UI/Rayfield initialization (some UIs restore flags and may override)
+-- Restore configuration from saved Rayfield flags after UI loads
 spawn(function()
-   wait(0.2)
+   wait(0.3) -- Wait for Rayfield to load configuration
    pcall(function()
-      if type(SilentAim) == 'table' then
-         SilentAim.Enabled = false
-         SilentAim.ShowFOV = false
-         SilentAim.FOVRadius = 50
-         SilentAim.TargetPart = "Legit"
+      -- Get saved values from Rayfield flags if they exist
+      local SavedFlags = Rayfield.Flags or {}
+      
+      -- Restore Aimbot FOV settings from saved flags
+      if ExunysDeveloperAimbot and ExunysDeveloperAimbot.FOVSettings then
+         if SavedFlags["toggleaimbotfov"] ~= nil then
+            local showFov = SavedFlags["toggleaimbotfov"].CurrentValue or false
+            ExunysDeveloperAimbot.FOVSettings.Enabled = showFov
+            ExunysDeveloperAimbot.FOVSettings.Visible = showFov
+         end
+         
+         if SavedFlags["aimbotfovsize"] ~= nil then
+            local fovSize = SavedFlags["aimbotfovsize"].CurrentValue or 90
+            ExunysDeveloperAimbot.FOVSettings.Amount = fovSize
+         end
       end
+      
+      -- Restore SilentAim FOV settings from saved flags
+      if type(SilentAim) == 'table' then
+         if SavedFlags["togglesfovsilent"] ~= nil then
+            SilentAim.ShowFOV = SavedFlags["togglesfovsilent"].CurrentValue or false
+         end
+         
+         if SavedFlags["slidefovsilent"] ~= nil then
+            local fovRadius = SavedFlags["slidefovsilent"].CurrentValue or 50
+            SilentAim.FOVRadius = math.max(fovRadius, 25) -- Enforce minimum
+         end
+         
+         if SavedFlags["slidefovyoffset"] ~= nil then
+            SilentAim.FOVYOffset = SavedFlags["slidefovyoffset"].CurrentValue or 0
+         end
+      end
+      
+      -- Update fovCircle if it exists
       if fovCircle then
          pcall(function()
             fovCircle.Radius = SilentAim.FOVRadius
