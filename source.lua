@@ -1,3 +1,29 @@
+-- =============================================
+-- ESSENCE - Rivals Script
+-- =============================================
+-- Version: 2.0 (Optimized & Restructured)
+-- Game: Rivals (Roblox FPS)
+-- UI Framework: Rayfield v1.68 Build 3K3W
+-- =============================================
+
+-- ========== SERVICES & GLOBALS ==========
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local Workspace = game:GetService("Workspace")
+local Lighting = game:GetService("Lighting")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local HttpService = game:GetService("HttpService")
+local TeleportService = game:GetService("TeleportService")
+
+local LocalPlayer = Players.LocalPlayer
+local Camera = Workspace.CurrentCamera
+
+-- Constants
+local SCRIPT_URL = "https://raw.githubusercontent.com/CacaBoudinaaa/Rayfield/refs/heads/main/source.lua"
+
+-- ========== UI INITIALIZATION ==========
 local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/CacaBoudinaaa/Rayfield/refs/heads/main/RayfieldUI'))()
 
 local Window = Rayfield:CreateWindow({
@@ -76,14 +102,6 @@ local function initializeAimbot()
    	Universal Aimbot Module by Exunys © CC0 1.0 Universal (2023 - 2024)
    	Modified for First Person Support
    ]]
-
-   --// Services
-   local RunService = game:GetService("RunService")
-   local UserInputService = game:GetService("UserInputService")
-   local TweenService = game:GetService("TweenService")
-   local Players = game:GetService("Players")
-   local Camera = workspace.CurrentCamera
-   local LocalPlayer = Players.LocalPlayer
 
    --// Variables
    local RequiredDistance, Typing, Running, Animation, ServiceConnections = 2000, false, false, nil, {}
@@ -368,6 +386,9 @@ end)
 
 -- persistence removed: no local file or Rayfield flag saving
 
+-- ========================================
+-- TAB: HOME (Main Features)
+-- ========================================
 local MainTab = Window:CreateTab("Home", 4483362458) -- Title, Image
 local Section = MainTab:CreateSection("Main")
 
@@ -379,15 +400,12 @@ local Button = MainTab:CreateButton({
 
       if _G.infiniteJumpStarted == nil then
          _G.infiniteJumpStarted = true
-         local UserInputService = game:GetService("UserInputService")
-         local Players = game:GetService("Players")
-         local localPlayer = Players.LocalPlayer
 
          UserInputService.InputBegan:Connect(function(input, gpe)
             if gpe then return end
             if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Enum.KeyCode.Space then
                if _G.infiniteJumpEnabled then
-                  local char = localPlayer.Character
+                  local char = LocalPlayer.Character
                   if char then
                      local humanoid = char:FindFirstChildOfClass("Humanoid")
                      if humanoid then
@@ -411,12 +429,9 @@ local Button = MainTab:CreateButton({
 
       if _G.noclipEnabled then
          -- start Stepped connection to disable collisions continuously
-         local RunService = game:GetService("RunService")
-         local Players = game:GetService("Players")
          noclipConnection = RunService.Stepped:Connect(function()
             pcall(function()
-               local pl = Players.LocalPlayer
-               local char = pl and pl.Character
+               local char = LocalPlayer.Character
                if char then
                   for _, part in pairs(char:GetChildren()) do
                      if part:IsA("BasePart") then
@@ -436,9 +451,7 @@ local Button = MainTab:CreateButton({
          end
 
          pcall(function()
-            local Players = game:GetService("Players")
-            local pl = Players.LocalPlayer
-            local char = pl and pl.Character
+            local char = LocalPlayer.Character
             if char then
                for _, part in pairs(char:GetChildren()) do
                   if part:IsA("BasePart") then
@@ -453,6 +466,9 @@ local Button = MainTab:CreateButton({
    end,
 })
 
+-- ========================================
+-- TAB: VISUALS (ESP, Graphics, Shaders)
+-- ========================================
 local VisualTab = Window:CreateTab("Visuals", 4483362458) -- Title, Image
 local Section = VisualTab:CreateSection("Visuals")
 
@@ -510,8 +526,6 @@ local originalLighting = {}
 
 local function enableShaders()
    pcall(function()
-      local Lighting = game:GetService("Lighting")
-      
       -- Save original lighting settings
       originalLighting = {
          Ambient = Lighting.Ambient,
@@ -576,8 +590,6 @@ end
 
 local function disableShaders()
    pcall(function()
-      local Lighting = game:GetService("Lighting")
-      
       -- Restore original lighting settings
       if originalLighting.Ambient then
          Lighting.Ambient = originalLighting.Ambient
@@ -628,8 +640,6 @@ local originalSkyData = nil
 
 local function enableCustomSky()
    pcall(function()
-      local Lighting = game:GetService("Lighting")
-      
       -- Save original sky if it exists
       local existingSky = Lighting:FindFirstChildOfClass("Sky")
       if existingSky and not originalSkyData then
@@ -643,14 +653,14 @@ local function enableCustomSky()
          }
       end
       
-      -- Create or modify sky
+      -- Create or modify sky (Starry Night skybox - working IDs)
       local sky = existingSky or Instance.new("Sky")
-      sky.SkyboxBk = "rbxassetid://271042516"
-      sky.SkyboxDn = "rbxassetid://271042556"
-      sky.SkyboxFt = "rbxassetid://271042590"
-      sky.SkyboxLf = "rbxassetid://271042628"
-      sky.SkyboxRt = "rbxassetid://271042664"
-      sky.SkyboxUp = "rbxassetid://271042701"
+      sky.SkyboxBk = "rbxassetid://218955819"
+      sky.SkyboxDn = "rbxassetid://218953419"
+      sky.SkyboxFt = "rbxassetid://218954524"
+      sky.SkyboxLf = "rbxassetid://218958493"
+      sky.SkyboxRt = "rbxassetid://218957134"
+      sky.SkyboxUp = "rbxassetid://218950090"
       
       if not existingSky then
          sky.Name = "RivalsCustomSky"
@@ -661,7 +671,6 @@ end
 
 local function disableCustomSky()
    pcall(function()
-      local Lighting = game:GetService("Lighting")
       local sky = Lighting:FindFirstChildOfClass("Sky")
       
       if sky then
@@ -810,8 +819,6 @@ local originalParts = {}
 
 local function enable4KGraphics()
    pcall(function()
-      local Lighting = game:GetService("Lighting")
-      local Workspace = game:GetService("Workspace")
       local Terrain = Workspace:FindFirstChildOfClass("Terrain")
       
       -- Sauvegarder TOUS les paramètres originaux (comme pshade)
@@ -1029,8 +1036,6 @@ end
 
 local function disable4KGraphics()
    pcall(function()
-      local Lighting = game:GetService("Lighting")
-      local Workspace = game:GetService("Workspace")
       local Terrain = Workspace:FindFirstChildOfClass("Terrain")
       
       -- Restaurer tous les paramètres Lighting
@@ -1159,6 +1164,9 @@ local Toggle = VisualTab:CreateToggle({
    end,
 })
 
+-- ========================================
+-- TAB: SILENT (Aimbot & Silent Aim)
+-- ========================================
 local SilentTab = Window:CreateTab("Silent", 4483362458) -- Title, Image
 local Section = SilentTab:CreateSection("Silent")
 
@@ -1179,7 +1187,14 @@ local Toggle = SilentTab:CreateToggle({
    Flag = "togglesfovsilent", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
    Callback = function(Value)
    pcall(function()
-      if type(SilentAim) == 'table' then SilentAim.ShowFOV = Value end
+      if type(SilentAim) == 'table' then 
+         SilentAim.ShowFOV = Value 
+      end
+      -- Update Aimbot FOV visibility
+      if ExunysDeveloperAimbot and ExunysDeveloperAimbot.FOVSettings then
+         ExunysDeveloperAimbot.FOVSettings.Enabled = Value
+         ExunysDeveloperAimbot.FOVSettings.Visible = Value
+      end
    end)
    end,
 })
@@ -1381,11 +1396,6 @@ local Dropdown = SilentTab:CreateDropdown({
 })
 
 -- #########################
-
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local LocalPlayer = Players.LocalPlayer
-local Camera = workspace.CurrentCamera
 
 -- Initialize defaults and try to read saved Rayfield configuration values if available
 do
@@ -1839,7 +1849,9 @@ RunService.RenderStepped:Connect(function()
    end)
 end)
 
-
+-- ========================================
+-- TAB: BALTANT (Movement & Teleport)
+-- ========================================
 local SettingsTab = Window:CreateTab("Baltant", 4483362458) -- Title, Image
 local Section = SettingsTab:CreateSection("Baltant")
 
@@ -2305,17 +2317,10 @@ EmotesTab:CreateButton({
 -- Charger la configuration sauvegardée
 Rayfield:LoadConfiguration()
 
--- ===========================
--- AUTOLOAD SYSTEM (FONCTIONNEL)
--- ===========================
--- Relance automatiquement le script lors du changement de serveur
-
-local TeleportService = game:GetService("TeleportService")
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-
--- URL du script à recharger
-local SCRIPT_URL = "https://raw.githubusercontent.com/CacaBoudinaaa/Rayfield/refs/heads/main/source.lua"
+-- ========================================
+-- AUTOLOAD SYSTEM (Server Change Detection)
+-- ========================================
+-- Automatically reloads the script when changing servers
 
 -- Détection du changement de serveur
 if queue_on_teleport then
