@@ -1681,7 +1681,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 					Title = "Essence Interface",
 					Content = "Enjoying this Script? Find it at discord.gg/qeDhbGtsn5",
 					Duration = 5,
-					Image = 123983499773006,
+					Image = 4370033185,
 				})
 			end
 		end)
