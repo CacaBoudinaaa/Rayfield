@@ -6,6 +6,48 @@
 -- UI Framework: Rayfield v1.68 Build 3K3W
 -- =============================================
 
+-- ========== HWID AUTHENTICATION SYSTEM ==========
+local function getHWID()
+    -- Get unique hardware identifier (executor-dependent)
+    if gethwid then
+        return gethwid()
+    elseif identifyexecutor then
+        local executor = identifyexecutor()
+        return executor .. "_" .. game:GetService("RbxAnalyticsService"):GetClientId()
+    else
+        -- Fallback: Use Roblox Client ID
+        return game:GetService("RbxAnalyticsService"):GetClientId()
+    end
+end
+
+-- Whitelist of authorized HWIDs (add your HWID here)
+local AuthorizedHWIDs = {
+    "9dcb6ba2-f080-11ef-85e4-806e6f6e6963", -- Owner (badol) - Your PC
+    -- Add more HWIDs below if you want to whitelist multiple users:
+    -- "FRIEND_HWID_1", -- Username1
+    -- "FRIEND_HWID_2", -- Username2
+}
+
+-- Check if user is authorized
+local function checkAuthorization()
+    local currentHWID = getHWID()
+    
+    -- Check if HWID is in whitelist
+    for _, authorizedHWID in ipairs(AuthorizedHWIDs) do
+        if currentHWID == authorizedHWID then
+            warn("✅ HWID Authorized")
+            return true
+        end
+    end
+    
+    -- HWID not authorized
+    warn("❌ Unauthorized HWID")
+    warn("This script is locked to authorized users only.")
+    warn("If you believe this is an error, contact the script owner.")
+    
+    return false
+end
+
 -- ========== SERVICES & GLOBALS ==========
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -23,6 +65,11 @@ local Camera = Workspace.CurrentCamera
 -- Constants
 local SCRIPT_URL = "https://raw.githubusercontent.com/CacaBoudinaaa/Rayfield/refs/heads/main/source.lua"
 
+-- ========== HWID CHECK (Run before loading UI) ==========
+if not checkAuthorization() then
+    return -- Stop script execution if not authorized
+end
+
 -- ========== UI INITIALIZATION ==========
 local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/CacaBoudinaaa/Rayfield/refs/heads/main/RayfieldUI'))()
 
@@ -32,7 +79,7 @@ local Window = Rayfield:CreateWindow({
    LoadingTitle = "Essence",
    LoadingSubtitle = "by Anonymous",
    ShowText = "Essence", -- for mobile users to unhide rayfield, change if you'd like
-   Theme = "DarkBlue", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+   Theme = "Default", -- Check https://docs.sirius.menu/rayfield/configuration/themes
 
    ToggleUIKeybind = Enum.KeyCode.RightShift, -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
 
