@@ -28,7 +28,7 @@ local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/Caca
 
 local Window = Rayfield:CreateWindow({
    Name = "Essence | Rivals",
-   Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+   Icon = 123983499773006, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
    LoadingTitle = "Essence",
    LoadingSubtitle = "by Anonymous",
    ShowText = "Essence", -- for mobile users to unhide rayfield, change if you'd like
