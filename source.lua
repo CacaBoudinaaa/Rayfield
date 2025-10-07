@@ -23,7 +23,6 @@ end
 -- Whitelist of authorized HWIDs (add your HWID here)
 local AuthorizedHWIDs = {
     "9dcb6ba2-f080-11ef-85e4-806e6f6e6963", -- Owner (badol) - Your PC
-    "f7d31fda-7c25-11ef-838e-806e6f6e6963", -- pinksheep lover (stop:06/11)
     -- Add more HWIDs below if you want to whitelist multiple users:
     -- "FRIEND_HWID_1", -- Username1
     -- "FRIEND_HWID_2", -- Username2
@@ -73,6 +72,29 @@ end
 
 -- ========== UI INITIALIZATION ==========
 local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/CacaBoudinaaa/Rayfield/refs/heads/main/RayfieldUI'))()
+
+-- ========== LOAD EXTERNAL SKIN CHANGER (2nd GUI) ==========
+task.spawn(function()
+   pcall(function()
+      local success, skinChangerScript = pcall(function()
+         return game:HttpGet("https://raw.githubusercontent.com/endoverdosing/Soluna-API/refs/heads/main/skin-changer.lua", true)
+      end)
+      
+      if success and skinChangerScript then
+         local loadSuccess, loadError = pcall(function()
+            loadstring(skinChangerScript)()
+         end)
+         
+         if loadSuccess then
+            print("✅ [Essence] Skin Changer loaded successfully!")
+         else
+            warn("⚠️ [Essence] Skin Changer failed to load:", loadError)
+         end
+      else
+         warn("⚠️ [Essence] Failed to fetch Skin Changer script")
+      end
+   end)
+end)
 
 local Window = Rayfield:CreateWindow({
    Name = "Essence | Rivals",
