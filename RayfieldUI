@@ -695,8 +695,8 @@ elseif not useStudio then
 	Rayfield.Parent = CoreGui
 end
 
--- MODIFIED: Commented out to allow multiple Rayfield instances simultaneously
---[[
+-- MODIFIED: Re-enabled but each script has unique name now (Rayfield_ScriptName)
+-- This prevents duplicate windows of the SAME script, but allows different scripts
 if gethui then
 	for _, Interface in ipairs(gethui():GetChildren()) do
 		if Interface.Name == Rayfield.Name and Interface ~= Rayfield then
@@ -712,7 +712,6 @@ elseif not useStudio then
 		end
 	end
 end
---]]
 
 
 local minSize = Vector2.new(1024, 768)
@@ -1569,6 +1568,14 @@ end
 
 function RayfieldLibrary:CreateWindow(Settings)
 	print('Injecting Essence...')
+	
+	-- MODIFIED: Give each Rayfield instance a unique name based on window title
+	-- This allows multiple different scripts to run simultaneously
+	if Settings.Name then
+		local uniqueName = "Rayfield_" .. Settings.Name:gsub("%s+", "_")
+		Rayfield.Name = uniqueName
+	end
+	
 	if Rayfield:FindFirstChild('Loading') then
 		if getgenv and not getgenv().rayfieldCached then
 			Rayfield.Enabled = true
@@ -1792,13 +1799,17 @@ function RayfieldLibrary:CreateWindow(Settings)
 		end
 
 		if not Passthrough then
-			local AttemptsRemaining = math.random(2, 5)
-			Rayfield.Enabled = false
-			local KeyUI = useStudio and script.Parent:FindFirstChild('Key') or game:GetObjects("rbxassetid://11380036235")[1]
+		local AttemptsRemaining = math.random(2, 5)
+		Rayfield.Enabled = false
+		local KeyUI = useStudio and script.Parent:FindFirstChild('Key') or game:GetObjects("rbxassetid://11380036235")[1]
 
-			KeyUI.Enabled = true
+		-- MODIFIED: Give KeyUI a unique name based on window title
+		if Settings.Name then
+			local uniqueName = "KeyUI_" .. Settings.Name:gsub("%s+", "_")
+			KeyUI.Name = uniqueName
+		end
 
-			if gethui then
+		KeyUI.Enabled = true			if gethui then
 				KeyUI.Parent = gethui()
 			elseif syn and syn.protect_gui then 
 				syn.protect_gui(KeyUI)
@@ -1809,8 +1820,8 @@ function RayfieldLibrary:CreateWindow(Settings)
 				KeyUI.Parent = CoreGui
 			end
 
-		-- MODIFIED: Commented out to allow multiple KeyUI instances
-		--[[
+		-- MODIFIED: Re-enabled but each KeyUI has unique name now (KeyUI_ScriptName)
+		-- This prevents duplicate key windows of the SAME script, but allows different scripts
 		if gethui then
 			for _, Interface in ipairs(gethui():GetChildren()) do
 				if Interface.Name == KeyUI.Name and Interface ~= KeyUI then
@@ -1826,7 +1837,6 @@ function RayfieldLibrary:CreateWindow(Settings)
 				end
 			end
 		end
-		--]]
 
 		local KeyMain = KeyUI.Main
 			KeyMain.Title.Text = Settings.KeySettings.Title or Settings.Name
