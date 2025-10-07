@@ -695,6 +695,8 @@ elseif not useStudio then
 	Rayfield.Parent = CoreGui
 end
 
+-- MODIFIED: Commented out to allow multiple Rayfield instances simultaneously
+--[[
 if gethui then
 	for _, Interface in ipairs(gethui():GetChildren()) do
 		if Interface.Name == Rayfield.Name and Interface ~= Rayfield then
@@ -710,6 +712,7 @@ elseif not useStudio then
 		end
 	end
 end
+--]]
 
 
 local minSize = Vector2.new(1024, 768)
@@ -1809,17 +1812,15 @@ function RayfieldLibrary:CreateWindow(Settings)
 			if gethui then
 				for _, Interface in ipairs(gethui():GetChildren()) do
 					if Interface.Name == KeyUI.Name and Interface ~= KeyUI then
-						Interface.Enabled = false
-						Interface.Name = "KeyUI-Old"
-					end
-				end
+						-- MODIFIED: Keep other KeyUI enabled
+					-- Interface.Enabled = false
+					-- Interface.Name = "KeyUI-Old"
 			elseif not useStudio then
 				for _, Interface in ipairs(CoreGui:GetChildren()) do
 					if Interface.Name == KeyUI.Name and Interface ~= KeyUI then
-						Interface.Enabled = false
-						Interface.Name = "KeyUI-Old"
-					end
-				end
+						-- MODIFIED: Keep other KeyUI enabled
+					-- Interface.Enabled = false
+					-- Interface.Name = "KeyUI-Old"
 			end
 
 			local KeyMain = KeyUI.Main
