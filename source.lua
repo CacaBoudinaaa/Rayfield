@@ -70,12 +70,15 @@ if not checkAuthorization() then
     return -- Stop script execution if not authorized
 end
 
--- ========== UI INITIALIZATION ==========
-local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/CacaBoudinaaa/Rayfield/refs/heads/main/RayfieldUI'))()
-
--- ========== LOAD EXTERNAL SKIN CHANGER (2nd GUI) ==========
-task.spawn(function()
+-- ========== LOAD EXTERNAL SKIN CHANGER FIRST (to avoid Rayfield overwrite) ==========
+do
+   local skinChangerLoaded = false
+   local CoreGui = game:GetService("CoreGui")
+   local PlayerGui = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+   
    pcall(function()
+      print("🔄 [Essence] Loading Skin Changer...")
+      
       local success, skinChangerScript = pcall(function()
          return game:HttpGet("https://raw.githubusercontent.com/endoverdosing/Soluna-API/refs/heads/main/skin-changer.lua", true)
       end)
@@ -86,7 +89,47 @@ task.spawn(function()
          end)
          
          if loadSuccess then
+            skinChangerLoaded = true
             print("✅ [Essence] Skin Changer loaded successfully!")
+            
+            -- ADVANCED PROTECTION: Move Skin Changer to CoreGui or protect it
+            task.spawn(function()
+               task.wait(0.5)
+               
+               -- Method 1: Protect in PlayerGui
+               for _, gui in ipairs(PlayerGui:GetChildren()) do
+                  if gui:IsA("ScreenGui") and gui.Name ~= "Rayfield" then
+                     gui.ResetOnSpawn = false
+                     gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+                     
+                     -- Try to move to CoreGui for extra protection
+                     pcall(function()
+                        local clone = gui:Clone()
+                        clone.Name = gui.Name .. "_Protected"
+                        clone.Parent = CoreGui
+                        print("🛡️ [Essence] Moved to CoreGui:", clone.Name)
+                     end)
+                     
+                     print("🛡️ [Essence] Protected GUI:", gui.Name)
+                  end
+               end
+               
+               -- Monitor for deletions
+               PlayerGui.ChildRemoved:Connect(function(removedGui)
+                  if removedGui:IsA("ScreenGui") and removedGui.Name:match("Skin") then
+                     warn("⚠️ [Essence] Skin Changer GUI was removed! Attempting to restore...")
+                     
+                     -- Try to restore from CoreGui
+                     local backup = CoreGui:FindFirstChild(removedGui.Name .. "_Protected")
+                     if backup then
+                        local restored = backup:Clone()
+                        restored.Name = removedGui.Name
+                        restored.Parent = PlayerGui
+                        print("✅ [Essence] Restored Skin Changer GUI!")
+                     end
+                  end
+               end)
+            end)
          else
             warn("⚠️ [Essence] Skin Changer failed to load:", loadError)
          end
@@ -94,6 +137,42 @@ task.spawn(function()
          warn("⚠️ [Essence] Failed to fetch Skin Changer script")
       end
    end)
+   
+   -- Wait for Skin Changer to fully load before initializing Rayfield
+   if skinChangerLoaded then
+      task.wait(1.5) -- Give Skin Changer time to set up
+      print("⏳ [Essence] Waiting for Skin Changer initialization...")
+   end
+end
+
+-- ========== UI INITIALIZATION (Essence Rayfield) ==========
+print("🔄 [Essence] Loading Essence UI...")
+local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/CacaBoudinaaa/Rayfield/refs/heads/main/RayfieldUI'))()
+
+-- Protect Essence GUI after creation
+task.spawn(function()
+   task.wait(1)
+   local PlayerGui = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+   local CoreGui = game:GetService("CoreGui")
+   
+   for _, gui in ipairs(PlayerGui:GetChildren()) do
+      if gui:IsA("ScreenGui") then
+         gui.ResetOnSpawn = false
+         
+         -- Backup to CoreGui
+         pcall(function()
+            if not gui.Name:match("Protected") then
+               local clone = gui:Clone()
+               clone.Name = gui.Name .. "_EssenceBackup"
+               clone.Parent = CoreGui
+            end
+         end)
+         
+         print("🛡️ [Essence] Protected Essence GUI:", gui.Name)
+      end
+   end
+   
+   print("✅ [Essence] All GUIs protected and backed up!")
 end)
 
 local Window = Rayfield:CreateWindow({
