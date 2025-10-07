@@ -683,34 +683,6 @@ until buildAttempts >= 2
 
 Rayfield.Enabled = false
 
-if gethui then
-	Rayfield.Parent = gethui()
-elseif syn and syn.protect_gui then 
-	syn.protect_gui(Rayfield)
-	Rayfield.Parent = CoreGui
-elseif not useStudio and CoreGui:FindFirstChild("RobloxGui") then
-	Rayfield.Parent = CoreGui:FindFirstChild("RobloxGui")
-elseif not useStudio then
-	Rayfield.Parent = CoreGui
-end
-
-if gethui then
-	for _, Interface in ipairs(gethui():GetChildren()) do
-		if Interface.Name == Rayfield.Name and Interface ~= Rayfield then
-			Interface.Enabled = false
-			Interface.Name = "Rayfield-Old"
-		end
-	end
-elseif not useStudio then
-	for _, Interface in ipairs(CoreGui:GetChildren()) do
-		if Interface.Name == Rayfield.Name and Interface ~= Rayfield then
-			Interface.Enabled = false
-			Interface.Name = "Rayfield-Old"
-		end
-	end
-end
-
-
 local minSize = Vector2.new(1024, 768)
 local useMobileSizing
 
@@ -1681,7 +1653,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 					Title = "Essence Interface",
 					Content = "Enjoying this Script? Find it at discord.gg/qeDhbGtsn5",
 					Duration = 5,
-					Image = 123983499773006,
+					Image = 4370033185,
 				})
 			end
 		end)
@@ -3995,4 +3967,3 @@ task.delay(1, function()
 end)
 
 return RayfieldLibrary
-
