@@ -23,7 +23,7 @@ end
 -- Whitelist of authorized HWIDs (add your HWID here)
 local AuthorizedHWIDs = {
     "9dcb6ba2-f080-11ef-85e4-806e6f6e6963", -- Owner (badol) - Your PC
-    -- Add more HWIDs below if you want to whitelist multiple users:
+    "f7d31fda-7c25-11ef-838e-806e6f6e6963", -- pinksheep lover (stop:06/11)
     -- "FRIEND_HWID_1", -- Username1
     -- "FRIEND_HWID_2", -- Username2
 }
