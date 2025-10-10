@@ -2386,6 +2386,657 @@ EmotesTab:CreateButton({
    end,
 })
 
+-- ===========================
+-- KATANA SKINS TAB
+-- ===========================
+local KatanaTab = Window:CreateTab("Katana", 4483362458)
+
+-- Get weapon models and wraps (récupération dynamique)
+local player = game:GetService("Players").LocalPlayer
+
+-- Fonction pour obtenir les armes disponibles
+local function getWeaponModels()
+   local success, weapons = pcall(function()
+      return player.PlayerScripts.Assets.ViewModels.Weapons:GetChildren()
+   end)
+   
+   if success and weapons then
+      return weapons
+   else
+      warn("[Weapon Skin] Unable to access ViewModels.Weapons")
+      return {}
+   end
+end
+
+-- Fonction pour obtenir les wraps
+local function getWrapTextures()
+   local success, wraps = pcall(function()
+      return player.PlayerScripts.Assets.WrapTextures:GetChildren()
+   end)
+   
+   if success and wraps then
+      return wraps
+   else
+      return {}
+   end
+end
+
+-- Database de skins pour les armes
+local WeaponSkins = {
+   -- Skins Katana
+   Katana = {
+      ["Default"] = {
+         color = Color3.fromRGB(200, 200, 200),
+         material = Enum.Material.SmoothPlastic,
+         materialVariant = "",
+         wrap = nil,
+         reflectance = 0,
+         transparency = 0,
+         description = "Default katana"
+      },
+      ["Glass Wrap"] = {
+         color = Color3.fromRGB(200, 230, 255),
+         material = Enum.Material.Glass,
+         materialVariant = "",
+         wrap = nil,
+         reflectance = 0.3,
+         transparency = 0.5,
+         description = "Transparent glass blade"
+      },
+   },
+   
+   -- Skins Burst Rifle
+   BurstRifle = {
+      ["Default"] = {
+         color = Color3.fromRGB(200, 200, 200),
+         material = Enum.Material.SmoothPlastic,
+         materialVariant = "",
+         wrap = nil,
+         reflectance = 0,
+         transparency = 0,
+         description = "Default burst rifle"
+      },
+      ["Glass Wrap"] = {
+         color = Color3.fromRGB(200, 230, 255),
+         material = Enum.Material.Glass,
+         materialVariant = "",
+         wrap = nil,
+         reflectance = 0.3,
+         transparency = 0.5,
+         description = "Transparent glass rifle"
+      },
+   },
+   
+   -- Skins Handgun
+   Handgun = {
+      ["Default"] = {
+         color = Color3.fromRGB(200, 200, 200),
+         material = Enum.Material.SmoothPlastic,
+         materialVariant = "",
+         wrap = nil,
+         reflectance = 0,
+         transparency = 0,
+         description = "Default handgun"
+      },
+      ["Glass Wrap"] = {
+         color = Color3.fromRGB(200, 230, 255),
+         material = Enum.Material.Glass,
+         materialVariant = "",
+         wrap = nil,
+         reflectance = 0.3,
+         transparency = 0.5,
+         description = "Transparent glass handgun"
+      },
+   },
+   
+   -- Skins Grenade
+   Grenade = {
+      ["Default"] = {
+         color = Color3.fromRGB(200, 200, 200),
+         material = Enum.Material.SmoothPlastic,
+         materialVariant = "",
+         wrap = nil,
+         reflectance = 0,
+         transparency = 0,
+         description = "Default grenade"
+      },
+      ["Glass Wrap"] = {
+         color = Color3.fromRGB(200, 230, 255),
+         material = Enum.Material.Glass,
+         materialVariant = "",
+         wrap = nil,
+         reflectance = 0.3,
+         transparency = 0.5,
+         description = "Transparent glass grenade"
+      },
+   },
+   
+   -- Skins Assault Rifle
+   AssaultRifle = {
+      ["Default"] = {
+         color = Color3.fromRGB(200, 200, 200),
+         material = Enum.Material.SmoothPlastic,
+         materialVariant = "",
+         wrap = nil,
+         reflectance = 0,
+         transparency = 0,
+         description = "Default assault rifle"
+      },
+      ["Glass Wrap"] = {
+         color = Color3.fromRGB(200, 230, 255),
+         material = Enum.Material.Glass,
+         materialVariant = "",
+         wrap = nil,
+         reflectance = 0.3,
+         transparency = 0.5,
+         description = "Transparent glass rifle"
+      },
+   },
+   
+   -- Skins Fists
+   Fists = {
+      ["Default"] = {
+         color = Color3.fromRGB(200, 200, 200),
+         material = Enum.Material.SmoothPlastic,
+         materialVariant = "",
+         wrap = nil,
+         reflectance = 0,
+         transparency = 0,
+         description = "Default fists"
+      },
+      ["Glass Wrap"] = {
+         color = Color3.fromRGB(200, 230, 255),
+         material = Enum.Material.Glass,
+         materialVariant = "",
+         wrap = nil,
+         reflectance = 0.3,
+         transparency = 0.5,
+         description = "Transparent glass fists"
+      },
+   },
+}
+
+-- Variables pour le système de skins
+local currentWeaponSkin = "Default"
+local rainbowEnabled = false
+local rainbowConnection = nil
+
+-- Debug: Afficher tous les noms d'armes disponibles
+local weaponModels = getWeaponModels()
+warn("[Weapon Skin] Found " .. #weaponModels .. " weapons in ViewModels")
+for i, weapon in ipairs(weaponModels) do
+   warn("  [" .. i .. "] " .. weapon.Name)
+end
+
+-- Fonction pour trouver une arme par type
+local function findWeaponModel(weaponType)
+   -- Récupérer les armes à chaque fois (au cas où de nouvelles armes sont ajoutées)
+   local weapons = getWeaponModels()
+   
+   for _, weapon in ipairs(weapons) do
+      local weaponNameLower = weapon.Name:lower()
+      
+      if weaponType == "Katana" then
+         -- Chercher katana, melee, knife, blade
+         if weaponNameLower:find("katana") or weaponNameLower:find("melee") or 
+            weaponNameLower:find("knife") or weaponNameLower:find("blade") then
+            warn("[Weapon Skin] Found Katana: " .. weapon.Name)
+            return weapon
+         end
+      elseif weaponType == "BurstRifle" then
+         -- IMPORTANT: Chercher UNIQUEMENT "burst" pour éviter de prendre AssaultRifle
+         -- On ne cherche PAS "rifle" seul car ça match aussi "AssaultRifle"
+         if weaponNameLower:find("burst") then
+            warn("[Weapon Skin] Found BurstRifle: " .. weapon.Name)
+            return weapon
+         end
+      elseif weaponType == "Handgun" then
+         -- Chercher toutes les variantes possibles pour le handgun
+         -- IMPORTANT: Le jeu peut utiliser "Hand Gun" (avec espace) ou "Pistols" (pluriel)
+         if weaponNameLower:find("hand") or -- "Hand Gun" ou "Handgun"
+            weaponNameLower:find("pistol") or -- "Pistol" ou "Pistols"
+            weaponNameLower:find("glock") or 
+            weaponNameLower:find("deagle") or
+            weaponNameLower:find("sidearm") then
+            warn("[Weapon Skin] Found Handgun: " .. weapon.Name)
+            return weapon
+         end
+      elseif weaponType == "Grenade" then
+         -- Chercher grenade, frag, explosive
+         if weaponNameLower:find("grenade") or weaponNameLower:find("frag") or
+            weaponNameLower:find("explosive") then
+            warn("[Weapon Skin] Found Grenade: " .. weapon.Name)
+            return weapon
+         end
+      elseif weaponType == "AssaultRifle" then
+         -- Chercher assault rifle - IMPORTANT: ne cherche que "assault" pour éviter confusion
+         if weaponNameLower:find("assault") then
+            warn("[Weapon Skin] Found AssaultRifle: " .. weapon.Name)
+            return weapon
+         end
+      elseif weaponType == "Fists" then
+         -- Chercher fists, punch, unarmed, melee
+         if weaponNameLower:find("fist") or weaponNameLower:find("punch") or
+            weaponNameLower:find("unarmed") then
+            warn("[Weapon Skin] Found Fists: " .. weapon.Name)
+            return weapon
+         end
+      end
+   end
+   
+   -- Si aucune arme n'est trouvée, afficher un warning avec la liste
+   warn("[Weapon Skin] Unable to find weapon model for type: " .. weaponType)
+   warn("[Weapon Skin] Available weapons:")
+   for i, weapon in ipairs(weapons) do
+      warn("  [" .. i .. "] " .. weapon.Name)
+   end
+   return nil
+end
+
+-- Fonction pour appliquer un skin à une arme
+local function ApplyWeaponSkin(weaponType, skinName)
+   pcall(function()
+      local skinData = WeaponSkins[weaponType]
+      if not skinData then return end
+      
+      local skin = skinData[skinName]
+      if not skin then return end
+      
+      local weaponModel = findWeaponModel(weaponType)
+      if not weaponModel then
+         warn("[Weapon Skin] " .. weaponType .. " model not found")
+         return
+      end
+      
+      -- Arrêter l'effet rainbow s'il était actif
+      if rainbowConnection then
+         rainbowConnection:Disconnect()
+         rainbowConnection = nil
+         rainbowEnabled = false
+      end
+      
+      -- Appliquer le skin à toutes les parties de l'arme
+      for _, part in ipairs(weaponModel:GetDescendants()) do
+         if part:IsA("BasePart") and part.Transparency ~= 1 then
+            part.Color = skin.color
+            part.Material = skin.material
+            part.MaterialVariant = skin.materialVariant
+            part.Reflectance = skin.reflectance
+            part.Transparency = skin.transparency
+            
+            -- Supprimer les textures/decals existants
+            for _, child in ipairs(part:GetChildren()) do
+               if child:IsA("Decal") or child:IsA("Texture") or child:IsA("SurfaceAppearance") then
+                  child:Destroy()
+               end
+            end
+            
+            -- Appliquer wrap si disponible
+            if skin.wrap then
+               local wraps = getWrapTextures()
+               for _, wrapTexture in ipairs(wraps) do
+                  if wrapTexture.Name == skin.wrap then
+                     for _, child in ipairs(wrapTexture:GetChildren()) do
+                        if child:IsA("Decal") or child:IsA("Texture") or child:IsA("SurfaceAppearance") then
+                           local clone = child:Clone()
+                           clone.Parent = part
+                        end
+                     end
+                     break
+                  end
+               end
+            end
+         end
+      end
+      
+      -- Activer l'effet rainbow si nécessaire
+      if skin.rainbow then
+         rainbowEnabled = true
+         local hue = 0
+         rainbowConnection = game:GetService("RunService").Heartbeat:Connect(function()
+            if not rainbowEnabled then
+               if rainbowConnection then rainbowConnection:Disconnect() end
+               return
+            end
+            
+            hue = (hue + 0.5) % 360
+            local rainbowColor = Color3.fromHSV(hue / 360, 1, 1)
+            
+            for _, part in ipairs(weaponModel:GetDescendants()) do
+               if part:IsA("BasePart") and part.Transparency ~= 1 then
+                  part.Color = rainbowColor
+               end
+            end
+         end)
+      end
+      
+      currentWeaponSkin = skinName
+      warn("[Weapon Skin] Applied " .. skinName .. " to " .. weaponType)
+   end)
+end
+
+-- Créer la liste des skins pour chaque arme
+local function getSkinNames(weaponType)
+   local names = {}
+   local skinData = WeaponSkins[weaponType]
+   if skinData then
+      for skinName, _ in pairs(skinData) do
+         table.insert(names, skinName)
+      end
+      table.sort(names)
+   end
+   return names
+end
+
+-- ========================================
+-- INTERFACE KATANA
+-- ========================================
+local katanaSkinNames = getSkinNames("Katana")
+
+-- Dropdown pour Katana
+local KatanaSkinDropdown = KatanaTab:CreateDropdown({
+   Name = "Katana Skin",
+   Options = katanaSkinNames,
+   CurrentOption = {"Default"},
+   MultipleOptions = false,
+   Flag = "KatanaSkinPreset",
+   Callback = function(Option)
+      ApplyWeaponSkin("Katana", Option[1] or Option)
+   end,
+})
+
+local Section1 = KatanaTab:CreateSection("Katana Quick Apply")
+
+KatanaTab:CreateButton({
+   Name = "💎 Glass Wrap",
+   Callback = function()
+      ApplyWeaponSkin("Katana", "Glass Wrap")
+   end,
+})
+
+-- ========================================
+-- INTERFACE BURST RIFLE
+-- ========================================
+local Section2 = KatanaTab:CreateSection("Burst Rifle Skins")
+
+local burstSkinNames = getSkinNames("BurstRifle")
+
+local BurstRifleSkinDropdown = KatanaTab:CreateDropdown({
+   Name = "Burst Rifle Skin",
+   Options = burstSkinNames,
+   CurrentOption = {"Default"},
+   MultipleOptions = false,
+   Flag = "BurstRifleSkinPreset",
+   Callback = function(Option)
+      ApplyWeaponSkin("BurstRifle", Option[1] or Option)
+   end,
+})
+
+KatanaTab:CreateButton({
+   Name = "💎 Glass Wrap (Burst)",
+   Callback = function()
+      ApplyWeaponSkin("BurstRifle", "Glass Wrap")
+   end,
+})
+
+-- ========================================
+-- INTERFACE HANDGUN
+-- ========================================
+local Section3 = KatanaTab:CreateSection("Handgun Skins")
+
+local handgunSkinNames = getSkinNames("Handgun")
+
+local HandgunSkinDropdown = KatanaTab:CreateDropdown({
+   Name = "Handgun Skin",
+   Options = handgunSkinNames,
+   CurrentOption = {"Default"},
+   MultipleOptions = false,
+   Flag = "HandgunSkinPreset",
+   Callback = function(Option)
+      ApplyWeaponSkin("Handgun", Option[1] or Option)
+   end,
+})
+
+KatanaTab:CreateButton({
+   Name = "💎 Glass Wrap (Handgun)",
+   Callback = function()
+      ApplyWeaponSkin("Handgun", "Glass Wrap")
+   end,
+})
+
+-- ========================================
+-- INTERFACE GRENADE
+-- ========================================
+local Section4 = KatanaTab:CreateSection("Grenade Skins")
+
+local grenadeSkinNames = getSkinNames("Grenade")
+
+local GrenadeSkinDropdown = KatanaTab:CreateDropdown({
+   Name = "Grenade Skin",
+   Options = grenadeSkinNames,
+   CurrentOption = {"Default"},
+   MultipleOptions = false,
+   Flag = "GrenadeSkinPreset",
+   Callback = function(Option)
+      ApplyWeaponSkin("Grenade", Option[1] or Option)
+   end,
+})
+
+KatanaTab:CreateButton({
+   Name = "💎 Glass Wrap (Grenade)",
+   Callback = function()
+      ApplyWeaponSkin("Grenade", "Glass Wrap")
+   end,
+})
+
+-- ========================================
+-- INTERFACE ASSAULT RIFLE
+-- ========================================
+local Section5 = KatanaTab:CreateSection("Assault Rifle Skins")
+
+local assaultSkinNames = getSkinNames("AssaultRifle")
+
+local AssaultRifleSkinDropdown = KatanaTab:CreateDropdown({
+   Name = "Assault Rifle Skin",
+   Options = assaultSkinNames,
+   CurrentOption = {"Default"},
+   MultipleOptions = false,
+   Flag = "AssaultRifleSkinPreset",
+   Callback = function(Option)
+      ApplyWeaponSkin("AssaultRifle", Option[1] or Option)
+   end,
+})
+
+KatanaTab:CreateButton({
+   Name = "💎 Glass Wrap (Assault)",
+   Callback = function()
+      ApplyWeaponSkin("AssaultRifle", "Glass Wrap")
+   end,
+})
+
+-- ========================================
+-- INTERFACE FISTS
+-- ========================================
+local Section6 = KatanaTab:CreateSection("Fists Skins")
+
+local fistsSkinNames = getSkinNames("Fists")
+
+local FistsSkinDropdown = KatanaTab:CreateDropdown({
+   Name = "Fists Skin",
+   Options = fistsSkinNames,
+   CurrentOption = {"Default"},
+   MultipleOptions = false,
+   Flag = "FistsSkinPreset",
+   Callback = function(Option)
+      ApplyWeaponSkin("Fists", Option[1] or Option)
+   end,
+})
+
+KatanaTab:CreateButton({
+   Name = "💎 Glass Wrap (Fists)",
+   Callback = function()
+      ApplyWeaponSkin("Fists", "Glass Wrap")
+   end,
+})
+
+-- Section Custom Settings
+local Section7 = KatanaTab:CreateSection("Custom Weapon Settings")
+
+-- Dropdown pour sélectionner quel type d'arme customiser
+local WeaponTypeDropdown = KatanaTab:CreateDropdown({
+   Name = "Weapon Type",
+   Options = {"Katana", "BurstRifle", "Handgun", "Grenade", "AssaultRifle", "Fists"},
+   CurrentOption = {"Katana"},
+   MultipleOptions = false,
+   Flag = "CustomWeaponType",
+   Callback = function(Option)
+      -- Weapon type changed
+   end,
+})
+
+local WeaponCustomColor = KatanaTab:CreateColorPicker({
+   Name = "Custom Color",
+   Color = Color3.fromRGB(255, 255, 255),
+   Flag = "WeaponCustomColor",
+   Callback = function(Value)
+      -- Color changed
+   end
+})
+
+local WeaponMaterialList = {}
+for _, v in pairs(Enum.Material:GetEnumItems()) do 
+   table.insert(WeaponMaterialList, v.Name) 
+end
+
+local WeaponCustomMaterial = KatanaTab:CreateDropdown({
+   Name = "Custom Material",
+   Options = WeaponMaterialList,
+   CurrentOption = {"SmoothPlastic"},
+   MultipleOptions = false,
+   Flag = "WeaponCustomMaterial",
+   Callback = function(Option)
+      -- Material changed
+   end,
+})
+
+local WeaponCustomReflectance = KatanaTab:CreateSlider({
+   Name = "Custom Reflectance",
+   Range = {0, 1},
+   Increment = 0.01,
+   CurrentValue = 0,
+   Flag = "WeaponCustomReflectance",
+   Callback = function(Value)
+      -- Reflectance changed
+   end,
+})
+
+local WeaponCustomTransparency = KatanaTab:CreateSlider({
+   Name = "Custom Transparency",
+   Range = {0, 1},
+   Increment = 0.01,
+   CurrentValue = 0,
+   Flag = "WeaponCustomTransparency",
+   Callback = function(Value)
+      -- Transparency changed
+   end,
+})
+
+KatanaTab:CreateButton({
+   Name = "Apply Custom Settings",
+   Callback = function()
+      pcall(function()
+         local weaponType = WeaponTypeDropdown.CurrentOption[1] or "Katana"
+         local weaponModel = findWeaponModel(weaponType)
+         
+         if not weaponModel then
+            warn("[Weapon Skin] " .. weaponType .. " model not found")
+            return
+         end
+         
+         -- Arrêter rainbow si actif
+         if rainbowConnection then
+            rainbowConnection:Disconnect()
+            rainbowConnection = nil
+            rainbowEnabled = false
+         end
+         
+         local customColor = WeaponCustomColor.Color or Color3.fromRGB(255, 255, 255)
+         local customMat = Enum.Material[WeaponCustomMaterial.CurrentOption[1] or "SmoothPlastic"]
+         local customRefl = WeaponCustomReflectance.CurrentValue or 0
+         local customTrans = WeaponCustomTransparency.CurrentValue or 0
+         
+         -- Appliquer custom settings
+         for _, part in ipairs(weaponModel:GetDescendants()) do
+            if part:IsA("BasePart") and part.Transparency ~= 1 then
+               part.Color = customColor
+               part.Material = customMat
+               part.Reflectance = customRefl
+               part.Transparency = customTrans
+               part.MaterialVariant = ""
+               
+               -- Supprimer textures
+               for _, child in ipairs(part:GetChildren()) do
+                  if child:IsA("Decal") or child:IsA("Texture") or child:IsA("SurfaceAppearance") then
+                     child:Destroy()
+                  end
+               end
+            end
+         end
+         
+         warn("[Weapon Skin] Custom settings applied to " .. weaponType)
+      end)
+   end,
+})
+
+KatanaTab:CreateButton({
+   Name = "Reset Selected Weapon",
+   Callback = function()
+      local weaponType = WeaponTypeDropdown.CurrentOption[1] or "Katana"
+      ApplyWeaponSkin(weaponType, "Default")
+   end,
+})
+
+local Section8 = KatanaTab:CreateSection("Debug")
+
+KatanaTab:CreateButton({
+   Name = "🔍 Show Available Weapons",
+   Callback = function()
+      local weapons = getWeaponModels()
+      warn("========================================")
+      warn("[Weapon Skin] Available weapons in ViewModels:")
+      warn("[Weapon Skin] Total count: " .. #weapons)
+      for i, weapon in ipairs(weapons) do
+         warn("  [" .. i .. "] " .. weapon.Name)
+      end
+      warn("========================================")
+      
+      -- Tester la détection pour chaque type
+      warn("[Detection Test]")
+      local katana = findWeaponModel("Katana")
+      warn("  Katana: " .. (katana and katana.Name or "NOT FOUND"))
+      
+      local burst = findWeaponModel("BurstRifle")
+      warn("  BurstRifle: " .. (burst and burst.Name or "NOT FOUND"))
+      
+      local handgun = findWeaponModel("Handgun")
+      warn("  Handgun: " .. (handgun and handgun.Name or "NOT FOUND"))
+      
+      local grenade = findWeaponModel("Grenade")
+      warn("  Grenade: " .. (grenade and grenade.Name or "NOT FOUND"))
+      
+      local assault = findWeaponModel("AssaultRifle")
+      warn("  AssaultRifle: " .. (assault and assault.Name or "NOT FOUND"))
+      
+      local fists = findWeaponModel("Fists")
+      warn("  Fists: " .. (fists and fists.Name or "NOT FOUND"))
+      warn("========================================")
+   end,
+})
+
+local Section9 = KatanaTab:CreateSection("Info")
+KatanaTab:CreateLabel("ℹ️ All skins are client-side only")
+KatanaTab:CreateLabel("💎 Glass Wrap = Transparent glass effect")
+
 -- Charger la configuration sauvegardée
 Rayfield:LoadConfiguration()
 
@@ -2462,3 +3113,4 @@ else
    --    Duration = 4
    -- })
 end
+
